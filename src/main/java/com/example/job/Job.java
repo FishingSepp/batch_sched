@@ -1,4 +1,4 @@
-package com.example.customer;
+package com.example.job;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

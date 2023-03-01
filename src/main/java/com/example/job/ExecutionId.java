@@ -1,4 +1,4 @@
-package com.example.customer;
+package com.example.job;
 
 import java.io.Serializable;
 import java.util.Objects;

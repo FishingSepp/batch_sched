@@ -1,14 +1,14 @@
-package com.example.customer;
+package com.example.job;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(scanBasePackages = {"com.example"})
-public class CustomerApplication {
+public class JobApplication {
 
     public static void main(String[] args) {
 
-        SpringApplication.run(CustomerApplication.class, args);
+        SpringApplication.run(JobApplication.class, args);
 
     }
 
