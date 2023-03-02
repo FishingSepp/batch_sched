@@ -11,10 +11,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "job")
 public class Job {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "job_id")
+    private Long jid;
     private String name;
     private String description;
     private Boolean status;
@@ -27,9 +30,9 @@ public class Job {
     private List<Execution> history = new ArrayList<>();
 
 
-    public Job(long id, String name, String description, boolean status, LocalDateTime startDate,
+    public Job(long jid, String name, String description, boolean status, LocalDateTime startDate,
                LocalDateTime endDate, LocalDateTime nextDate, boolean repeat) {
-        this.id = id;
+        this.jid = jid;
         this.name = name;
         this.description = description;
         this.status = status;
@@ -44,12 +47,12 @@ public class Job {
 
     }
 
-    public long getId() {
-        return id;
+    public long getJid() {
+        return jid;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setJid(long id) {
+        this.jid = id;
     }
 
     public String getName() {
@@ -119,7 +122,7 @@ public class Job {
     @Override
     public String toString() {
         return "Job{" +
-                "id=" + id +
+                "id=" + jid +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 '}';

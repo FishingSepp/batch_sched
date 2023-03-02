@@ -2,9 +2,13 @@ package com.example.job;
 
 import java.io.Serializable;
 import java.util.Objects;
+import jakarta.persistence.*;
+
 public class ExecutionId implements Serializable {
 
+    @Id
     private Long job;
+    @Id
     private Long executionId;
 
     public ExecutionId() {

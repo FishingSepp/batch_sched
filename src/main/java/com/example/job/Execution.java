@@ -4,21 +4,20 @@ package com.example.job;
 import jakarta.persistence.*;
 
 @Entity
-@IdClass(ExecutionId.class)
+@Table(name = "execution", schema  = "jobapi")
 public class Execution {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "execution_id")
+    private Long eid;
     private Boolean success;
     private Integer exitCode;
     private String output;
 
-    @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "job_id")
+    @JoinColumn(name = "job_id", referencedColumnName = "job_id")
     private Job job;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long executionId;
 
     public Execution() {
     }
