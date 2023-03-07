@@ -1,4 +1,4 @@
-package com.example.job;
+package com.example.job.entities;
 
 
 import jakarta.persistence.*;
@@ -51,5 +51,16 @@ public class Execution {
 
     public void setOutput(String output) {
         this.output = output;
+    }
+
+    @Override
+    public String toString() {
+        return "Execution{" +
+                "eid=" + eid +
+                ", success=" + success +
+                ", exitCode=" + exitCode +
+                ", output='" + output + '\'' +
+                ", job=" + job +
+                '}';
     }
 }
