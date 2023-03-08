@@ -1,4 +1,4 @@
-package com.example.job.entities;
+package com.example.job;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class Job {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "job_id")
-    private Long jid;
+    private Long job_id;
 
     @NotBlank(message = "Name is required")
     @Size(max = 50, message = "Name must be at most 50 characters")
@@ -32,24 +32,24 @@ public class Job {
 
     private Boolean repeated;
     private Boolean status;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private LocalDateTime nextDate;
+    private LocalDateTime start_date;
+    private LocalDateTime end_date;
+    private LocalDateTime next_date;
 
     @JsonIgnore
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL)
     private List<Execution> history = new ArrayList<>();
 
 
-    public Job(long jid, String name, String description, boolean status, LocalDateTime startDate,
-               LocalDateTime endDate, LocalDateTime nextDate, boolean repeated) {
-        this.jid = jid;
+    public Job(long job_id, String name, String description, boolean status, LocalDateTime start_date,
+               LocalDateTime end_date, LocalDateTime next_date, boolean repeated) {
+        this.job_id = job_id;
         this.name = name;
         this.description = description;
         this.status = status;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.nextDate = nextDate;
+        this.start_date = start_date;
+        this.end_date = end_date;
+        this.next_date = next_date;
         this.repeated = repeated;
         this.history = new ArrayList<>();
     }
@@ -58,12 +58,12 @@ public class Job {
 
     }
 
-    public long getJid() {
-        return jid;
+    public long getJob_id() {
+        return job_id;
     }
 
-    public void setJid(long id) {
-        this.jid = id;
+    public void setJob_id(long id) {
+        this.job_id = id;
     }
 
     public String getName() {
@@ -90,36 +90,36 @@ public class Job {
         this.status = status;
     }
 
-    public LocalDateTime getStartDate() {
-        return startDate;
+    public LocalDateTime getStart_date() {
+        return start_date;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
+    public void setStart_date(LocalDateTime startDate) {
+        this.start_date = startDate;
     }
 
-    public LocalDateTime getEndDate() {
-        return endDate;
+    public LocalDateTime getEnd_date() {
+        return end_date;
     }
 
-    public void setEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
+    public void setEnd_date(LocalDateTime endDate) {
+        this.end_date = endDate;
     }
 
-    public LocalDateTime getNextDate() {
-        return nextDate;
+    public LocalDateTime getNext_date() {
+        return next_date;
     }
 
-    public void setNextDate(LocalDateTime nextDate) {
-        this.nextDate = nextDate;
+    public void setNext_date(LocalDateTime nextDate) {
+        this.next_date = nextDate;
     }
 
     public boolean isRepeated() {
         return repeated;
     }
 
-    public void setRepeated(boolean repeat) {
-        this.repeated = repeat;
+    public void setRepeated(boolean repeated) {
+        this.repeated = repeated;
     }
 
     public List<Execution> getHistory() {
@@ -133,14 +133,14 @@ public class Job {
     @Override
     public String toString() {
         return "Job{" +
-                "jid=" + jid +
+                "jid=" + job_id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                ", nextDate=" + nextDate +
-                ", repeat=" + repeated +
+                ", startDate=" + start_date +
+                ", endDate=" + end_date +
+                ", nextDate=" + next_date +
+                ", repeated=" + repeated +
                 ", history=" + history +
                 '}';
     }

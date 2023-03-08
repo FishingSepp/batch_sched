@@ -1,13 +1,17 @@
 package com.example.job;
 
-import com.example.job.entities.Execution;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import java.util.Optional;
+import java.util.List;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
+
 
 @Repository
 public interface ExecutionRepository extends JpaRepository<Execution, Long> {
-    @EntityGraph(attributePaths = "history")
-    Optional<Execution> findById(Long id);
+    @Transactional
+    @Query("SELECT e FROM Execution e WHERE e.job.job_id = :job_id")
+    List<Execution> findByJobJid(@Param("job_id") Long job_id);
 }
+

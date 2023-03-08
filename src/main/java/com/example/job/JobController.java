@@ -1,7 +1,5 @@
 package com.example.job;
 
-import com.example.job.entities.Job;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -14,8 +12,15 @@ import io.swagger.annotations.*;
 @RequestMapping("/job")
 public class JobController {
 
-    @Autowired
-    private JobRepository jobRepository;
+    private final JobRepository jobRepository;
+    private final ExecutionController executionController;
+    private final ExecutionRepository executionRepository;
+
+    public JobController(JobRepository jobRepository, ExecutionController executionController, ExecutionRepository executionRepository) {
+        this.jobRepository = jobRepository;
+        this.executionController = executionController;
+        this.executionRepository = executionRepository;
+    }
 
     @GetMapping
     @ApiOperation(value = "Get all jobs", notes = "Gets all existing jobs")
@@ -68,9 +73,9 @@ public class JobController {
         existingJob.setDescription(job.getDescription());
         existingJob.setRepeated(job.isRepeated());
         existingJob.setStatus(job.isStatus());
-        existingJob.setStartDate(job.getStartDate());
-        existingJob.setEndDate(job.getEndDate());
-        existingJob.setNextDate(job.getNextDate());
+        existingJob.setStart_date(job.getStart_date());
+        existingJob.setEnd_date(job.getEnd_date());
+        existingJob.setNext_date(job.getNext_date());
         Job updatedJob = jobRepository.save(existingJob);
         return new ResponseEntity<>(updatedJob, HttpStatus.OK);
     }
@@ -82,6 +87,28 @@ public class JobController {
                 .orElseThrow(() -> new JobNotFoundException("Job not found with id: " + jid));
         jobRepository.delete(job);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{jid}/execute")
+    public ResponseEntity<Execution> executeJob(@PathVariable Long jid, @RequestBody Execution executionRequest) {
+        Optional<Job> jobOptional = jobRepository.findById(jid);
+        if (jobOptional.isPresent()) {
+            Job job = jobOptional.get();
+            // execute job logic
+            // ...
+            // edit parameter below to depend on outcome of job execution
+            // create new execution
+            Execution execution = new Execution();
+            execution.setSuccess(executionRequest.getSuccess());
+            execution.setExit_code(executionRequest.getExit_code());
+            execution.setOutput(executionRequest.getOutput());
+            execution.setJob(job);
+            execution.setJobId(job.getJob_id());
+            executionRepository.save(execution);
+            return new ResponseEntity<>(execution, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
 }

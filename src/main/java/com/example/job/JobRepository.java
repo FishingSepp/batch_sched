@@ -1,6 +1,5 @@
 package com.example.job;
 
-import com.example.job.entities.Job;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
