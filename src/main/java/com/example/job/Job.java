@@ -30,11 +30,11 @@ public class Job {
     @Size(max = 200, message = "Description must be at most 200 characters")
     private String description;
 
-    private Boolean repeated;
     private Boolean status;
     private LocalDateTime start_date;
     private LocalDateTime end_date;
-    private LocalDateTime next_date;
+    private String cronExpression;
+
 
     @JsonIgnore
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL)
@@ -42,20 +42,27 @@ public class Job {
 
 
     public Job(long job_id, String name, String description, boolean status, LocalDateTime start_date,
-               LocalDateTime end_date, LocalDateTime next_date, boolean repeated) {
+               LocalDateTime end_date, String cronExpression) {
         this.job_id = job_id;
         this.name = name;
         this.description = description;
         this.status = status;
         this.start_date = start_date;
         this.end_date = end_date;
-        this.next_date = next_date;
-        this.repeated = repeated;
+        this.cronExpression = cronExpression;
         this.history = new ArrayList<>();
     }
 
     public Job() {
 
+    }
+
+    public String getCronExpression() {
+        return cronExpression;
+    }
+
+    public void setCronExpression(String cronExpression) {
+        this.cronExpression = cronExpression;
     }
 
     public long getJob_id() {
@@ -106,22 +113,6 @@ public class Job {
         this.end_date = endDate;
     }
 
-    public LocalDateTime getNext_date() {
-        return next_date;
-    }
-
-    public void setNext_date(LocalDateTime nextDate) {
-        this.next_date = nextDate;
-    }
-
-    public boolean isRepeated() {
-        return repeated;
-    }
-
-    public void setRepeated(boolean repeated) {
-        this.repeated = repeated;
-    }
-
     public List<Execution> getHistory() {
         return history;
     }
@@ -139,8 +130,6 @@ public class Job {
                 ", status=" + status +
                 ", startDate=" + start_date +
                 ", endDate=" + end_date +
-                ", nextDate=" + next_date +
-                ", repeated=" + repeated +
                 ", history=" + history +
                 '}';
     }

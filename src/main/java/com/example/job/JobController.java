@@ -29,18 +29,19 @@ public class JobController {
             @ApiResponse(code = 404, message = "Resource not found")
     })
     public List<Job> getAllJobs() {
+        System.out.println("Getting all jobs...");
         return jobRepository.findAll();
     }
 
 
-    @GetMapping("/{id}")
+    @GetMapping("/{jid}")
     @ApiOperation(value = "Gets job by ID", notes = "Gets a job with the given ID")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Job received successfully"),
             @ApiResponse(code = 404, message = "Resource not found")
     })
-    public ResponseEntity<Job> getJobById(@PathVariable Long id) {
-        Optional<Job> jobOptional = jobRepository.findById(id);
+    public ResponseEntity<Job> getJobById(@PathVariable Long jid) {
+        Optional<Job> jobOptional = jobRepository.findById(jid);
         if (jobOptional.isPresent()) {
             return new ResponseEntity<>(jobOptional.get(), HttpStatus.OK);
         } else {
@@ -71,11 +72,10 @@ public class JobController {
                 .orElseThrow(() -> new JobNotFoundException("Job not found with id: " + jid));
         existingJob.setName(job.getName());
         existingJob.setDescription(job.getDescription());
-        existingJob.setRepeated(job.isRepeated());
+        existingJob.setCronExpression(job.getCronExpression());
         existingJob.setStatus(job.isStatus());
         existingJob.setStart_date(job.getStart_date());
         existingJob.setEnd_date(job.getEnd_date());
-        existingJob.setNext_date(job.getNext_date());
         Job updatedJob = jobRepository.save(existingJob);
         return new ResponseEntity<>(updatedJob, HttpStatus.OK);
     }

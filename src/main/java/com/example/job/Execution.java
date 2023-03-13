@@ -14,13 +14,8 @@ public class Execution {
     @Column(name = "job_id", insertable = false, updatable = false)
     private Long job_id;
 
-    @Column(name = "success")
     private Boolean success;
-
-    @Column(name = "exit_code")
     private Integer exit_code;
-
-    @Column(name = "output")
     private String output;
 
     //FetchType.LAZY would be better but running into errors with it
