@@ -42,6 +42,7 @@ public class ExecutionController {
             executionDTO.setJobId(execution.getJob().getJob_id()); // <-- include jid attribute
             executionDTOs.add(executionDTO);
         }
+        System.out.println("Getting all executions...");
         return ResponseEntity.ok(executionDTOs);
     }
 
@@ -61,6 +62,7 @@ public class ExecutionController {
         if (executions.isEmpty()) {
             throw new ExecutionNotFoundException("No executions found for job with jid " + jid);
         }
+        System.out.println("Getting executions of job with Id "+jid+"...");
         return ResponseEntity.ok(executions);
     }
 
@@ -94,6 +96,7 @@ public class ExecutionController {
         Execution execution = executionRepository.findById(eid)
                 .orElseThrow(() -> new ExecutionNotFoundException("Execution not found with id: " + eid));
         executionRepository.delete(execution);
+        System.out.println("Deleting executions with eId "+eid+"...");
         return ResponseEntity.noContent().build();
     }
 }

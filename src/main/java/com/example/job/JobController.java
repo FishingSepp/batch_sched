@@ -43,6 +43,7 @@ public class JobController {
     public ResponseEntity<Job> getJobById(@PathVariable Long jid) {
         Optional<Job> jobOptional = jobRepository.findById(jid);
         if (jobOptional.isPresent()) {
+            System.out.println("Getting job with Id "+jid+"...");
             return new ResponseEntity<>(jobOptional.get(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -57,6 +58,7 @@ public class JobController {
     })
     public ResponseEntity<Job> createJob(@Validated @RequestBody Job job) {
         Job createdJob = jobRepository.save(job);
+        System.out.println("Creating job...");
         return new ResponseEntity<>(createdJob, HttpStatus.CREATED);
     }
 
@@ -77,6 +79,7 @@ public class JobController {
         existingJob.setStart_date(job.getStart_date());
         existingJob.setEnd_date(job.getEnd_date());
         Job updatedJob = jobRepository.save(existingJob);
+        System.out.println("Editing job with Id "+jid+"...");
         return new ResponseEntity<>(updatedJob, HttpStatus.OK);
     }
 
@@ -86,6 +89,7 @@ public class JobController {
         Job job = jobRepository.findById(jid)
                 .orElseThrow(() -> new JobNotFoundException("Job not found with id: " + jid));
         jobRepository.delete(job);
+        System.out.println("Deleting job with Id "+jid+"...");
         return ResponseEntity.noContent().build();
     }
 
