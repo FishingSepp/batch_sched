@@ -2,6 +2,8 @@ package com.example.job;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "execution", schema  = "jobapi")
 public class Execution {
@@ -17,6 +19,9 @@ public class Execution {
     private Boolean success;
     private Integer exit_code;
     private String output;
+
+    private LocalDateTime start_time;
+    private LocalDateTime end_time;
 
     //FetchType.LAZY would be better but running into errors with it
     @ManyToOne(fetch = FetchType.EAGER)
@@ -34,11 +39,13 @@ public class Execution {
         this.execution_id = eid;
     }
 
-    public Execution(boolean success, int exit_code, String output, Job job) {
+    public Execution(boolean success, int exit_code, String output, LocalDateTime start_time, LocalDateTime end_time, Job job) {
         this.success = success;
         this.exit_code = exit_code;
         this.output = output;
         this.job = job;
+        this.start_time = start_time;
+        this.end_time = end_time;
     }
 
     public Long getJobId() {
@@ -79,6 +86,22 @@ public class Execution {
 
     public void setOutput(String output) {
         this.output = output;
+    }
+
+    public LocalDateTime getStart_time() {
+        return start_time;
+    }
+
+    public void setStart_time(LocalDateTime start_time) {
+        this.start_time = start_time;
+    }
+
+    public LocalDateTime getEnd_time() {
+        return end_time;
+    }
+
+    public void setEnd_time(LocalDateTime end_time) {
+        this.end_time = end_time;
     }
 
     @Override

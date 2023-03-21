@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 import java.util.List;
 import io.swagger.annotations.*;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/job")
@@ -83,6 +85,23 @@ public class JobController {
         return new ResponseEntity<>(updatedJob, HttpStatus.OK);
     }
 
+    @PutMapping("/{jid}/status")
+    @ApiOperation(value = "Edit job status by ID", notes = "Edits the status of a job with the given ID")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Job status edited successfully"),
+            @ApiResponse(code = 404, message = "Resource not found")
+    })
+    public ResponseEntity<Job> updateJobStatus(@PathVariable("jid") Long jid, @Validated @RequestBody Map<String, Boolean> body) {
+        Job existingJob = jobRepository.findById(jid)
+                .orElseThrow(() -> new JobNotFoundException("Job not found with id: " + jid));
+        Boolean newStatus = body.get("status");
+        existingJob.setStatus(newStatus);
+        Job updatedJob = jobRepository.save(existingJob);
+        System.out.println("Editing status of job with Id "+jid+"...");
+        return new ResponseEntity<>(updatedJob, HttpStatus.OK);
+    }
+
+
 
     @DeleteMapping("/{jid}")
     public ResponseEntity<Void> deleteJob(@PathVariable("jid") Long jid) {
@@ -106,6 +125,8 @@ public class JobController {
             execution.setSuccess(executionRequest.getSuccess());
             execution.setExit_code(executionRequest.getExit_code());
             execution.setOutput(executionRequest.getOutput());
+            execution.setStart_time(executionRequest.getStart_time());
+            execution.setEnd_time(executionRequest.getEnd_time());
             execution.setJob(job);
             execution.setJobId(job.getJob_id());
             executionRepository.save(execution);
