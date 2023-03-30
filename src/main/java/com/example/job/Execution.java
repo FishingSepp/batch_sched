@@ -23,7 +23,7 @@ public class Execution {
     private LocalDateTime start_time;
     private LocalDateTime end_time;
 
-    //FetchType.LAZY would be better but running into errors with it
+    //FetchType.LAZY could be better? but running into errors with it
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "job_id", referencedColumnName = "job_id")
     private Job job;

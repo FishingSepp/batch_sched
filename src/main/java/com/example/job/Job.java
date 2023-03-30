@@ -30,6 +30,7 @@ public class Job {
     @Size(max = 200, message = "Description must be at most 200 characters")
     private String description;
 
+    private String job_script;
     private Boolean status;
     private LocalDateTime start_date;
     private LocalDateTime end_date;
@@ -41,11 +42,12 @@ public class Job {
     private List<Execution> history = new ArrayList<>();
 
 
-    public Job(long job_id, String name, String description, boolean status, LocalDateTime start_date,
+    public Job(long job_id, String name, String description, String job_script, boolean status, LocalDateTime start_date,
                LocalDateTime end_date, String cronExpression) {
         this.job_id = job_id;
         this.name = name;
         this.description = description;
+        this.job_script = job_script;
         this.status = status;
         this.start_date = start_date;
         this.end_date = end_date;
@@ -83,6 +85,14 @@ public class Job {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getJob_script() {
+        return job_script;
+    }
+
+    public void setJob_script(String job_script) {
+        this.job_script = job_script;
     }
 
     public void setDescription(String description) {

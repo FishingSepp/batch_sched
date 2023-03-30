@@ -7,6 +7,8 @@ import java.util.List;
 import io.swagger.annotations.*;
 import java.util.ArrayList;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Collections;
+
 
 
 @RestController
@@ -46,45 +48,22 @@ public class ExecutionController {
         return ResponseEntity.ok(executionDTOs);
     }
 
-//----------------------------continue here--------------------------
-    /*@GetMapping("/{jid}")
-    public ResponseEntity<List<Execution>> getExecutionsByJobId(@PathVariable Long jid) {
-        List<Execution> executions = executionRepository.findByJob_Jid(jid);
-        if (executions.isEmpty()) {
-            throw new ExecutionNotFoundException("No executions found for job with jid " + jid);
-        }
-        return ResponseEntity.ok(executions);
-    }*/
-
+    //took away 404 response as it would flood console for not-yet executed jobs
     @GetMapping("/{jid}")
+    @ApiOperation(value = "Gets executions of a job by ID", notes = "Gets the executions of a job with the given ID")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Executions of job received successfully"),
+            @ApiResponse(code = 404, message = "Resource not found")
+    })
     public ResponseEntity<List<Execution>> getExecutionsByJobId(@PathVariable Long jid) {
         List<Execution> executions = executionRepository.findByJobJid(jid);
         if (executions.isEmpty()) {
-            throw new ExecutionNotFoundException("No executions found for job with jid " + jid);
+            //System.out.println("Empty response for executions of job with Id "+jid+"...");
+            return ResponseEntity.ok(Collections.emptyList());
         }
-        System.out.println("Getting executions of job with Id "+jid+"...");
+        //System.out.println("Getting executions of job with Id "+jid+"...");
         return ResponseEntity.ok(executions);
     }
-
-    /*@PostMapping("/{jid}")
-    @ApiOperation(value = "Create new execution", notes = "Creates a new execution for a given job")
-    @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Execution created successfully"),
-            @ApiResponse(code = 400, message = "Bad request")
-    })
-    public ResponseEntity<Execution> createExecution(@PathVariable("jid") Long jid, @Validated @RequestBody Execution execution) {
-        Optional<Job> jobOptional = jobRepository.findById(jid);
-        if (jobOptional.isPresent()) {
-            Job job = jobOptional.get();
-            execution.setJob(job);
-            Execution newExecution = executionRepository.save(execution);
-            return new ResponseEntity<>(newExecution, HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }*/
-
-
 
     @DeleteMapping("/{eid}")
     @ApiOperation(value = "Delete execution by ID", notes = "Deletes an execution with the given ID")

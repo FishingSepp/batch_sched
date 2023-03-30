@@ -8,7 +8,13 @@ import java.util.Optional;
 import java.util.List;
 import io.swagger.annotations.*;
 import java.util.Map;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RestController;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/job")
@@ -76,6 +82,7 @@ public class JobController {
                 .orElseThrow(() -> new JobNotFoundException("Job not found with id: " + jid));
         existingJob.setName(job.getName());
         existingJob.setDescription(job.getDescription());
+        existingJob.setJob_script(job.getJob_script());
         existingJob.setCronExpression(job.getCronExpression());
         existingJob.setStatus(job.isStatus());
         existingJob.setStart_date(job.getStart_date());
@@ -117,16 +124,53 @@ public class JobController {
         Optional<Job> jobOptional = jobRepository.findById(jid);
         if (jobOptional.isPresent()) {
             Job job = jobOptional.get();
-            // execute job logic
-            // ...
-            // edit parameter below to depend on outcome of job execution
-            // create new execution
+
+            executionRequest.setStart_time(LocalDateTime.now());
+
+            // Check if empty or null job script, if so -> success
+            String command = job.getJob_script();
+            if (command == null || command.trim().isEmpty()) {
+                Execution execution = new Execution();
+                execution.setSuccess(true);
+                execution.setExit_code(0);
+                execution.setOutput("No job script provided.");
+                execution.setStart_time(executionRequest.getStart_time());
+                execution.setEnd_time(LocalDateTime.now());
+                execution.setJob(job);
+                execution.setJobId(job.getJob_id());
+                executionRepository.save(execution);
+                return new ResponseEntity<>(execution, HttpStatus.OK);
+            }
+
+            // exec job logic
+            Process process;
+            int exitCode = -1;
+            String output = "";
+            try {
+                process = Runtime.getRuntime().exec(command);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                output = reader.lines().collect(Collectors.joining("\n"));
+                exitCode = process.waitFor();
+
+                System.out.println("Script output (jobId "+jid+"): " + output);
+                System.out.println("Exit code (jobId "+jid+"): " + exitCode);
+
+                BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                String errorOutput = errorReader.lines().collect(Collectors.joining("\n"));
+                System.out.println("Error output (jobId "+jid+"): " + errorOutput);
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            // success based on exit code?
+            boolean success = exitCode == 0;
+
             Execution execution = new Execution();
-            execution.setSuccess(executionRequest.getSuccess());
-            execution.setExit_code(executionRequest.getExit_code());
-            execution.setOutput(executionRequest.getOutput());
+            execution.setSuccess(success);
+            execution.setExit_code(exitCode);
+            execution.setOutput(output);
             execution.setStart_time(executionRequest.getStart_time());
-            execution.setEnd_time(executionRequest.getEnd_time());
+            execution.setEnd_time(LocalDateTime.now());
             execution.setJob(job);
             execution.setJobId(job.getJob_id());
             executionRepository.save(execution);
@@ -135,5 +179,6 @@ public class JobController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
 
 }
