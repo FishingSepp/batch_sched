@@ -78,5 +78,25 @@ public class ExecutionController {
         System.out.println("Deleting executions with eId "+eid+"...");
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/job/{jid}")
+    @ApiOperation(value = "Delete executions of a job by job ID", notes = "Deletes all executions of a job with the given job ID")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Executions deleted successfully"),
+            @ApiResponse(code = 404, message = "Resource not found")
+    })
+    public ResponseEntity<Void> deleteExecutionsOfJob(@PathVariable("jid") Long jid) {
+        List<Execution> executions = executionRepository.findByJobJid(jid);
+
+        if (executions.isEmpty()) {
+            throw new ExecutionNotFoundException("No executions found with jobId: " + jid);
+        }
+
+        executionRepository.deleteAll(executions);
+        System.out.println("Deleting executions with jobId " + jid + "...");
+        return ResponseEntity.noContent().build();
+    }
+
+
 }
 

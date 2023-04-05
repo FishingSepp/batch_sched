@@ -13,5 +13,6 @@ public interface ExecutionRepository extends JpaRepository<Execution, Long> {
     @Transactional
     @Query("SELECT e FROM Execution e WHERE e.job.job_id = :job_id")
     List<Execution> findByJobJid(@Param("job_id") Long job_id);
+
 }
 
