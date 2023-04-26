@@ -1,0 +1,51 @@
+>>> Comments Marc
+
+*** Marker
+##Top           Super, sehr gut :)
+##Bad           Schlecht gelöst.
+                Anmerkung 1: Das ist Kritik auf hohem Niveau. Deine Implementierung ist SUPER gut. Bei einem Anfänger hätte
+                ich erwartet, Grundlagen zu kritisieren. Bei dir bezieht sich die Kritik auf fortgeschrittene Punkte,
+                die du noch gar nicht wissen kannst :)
+                Anmerkung 2: Ich spare mir einen eigenen Marker "Optimize" im Sinne "könnte man schöner/besser machen".
+                Bad ist also nicht immer "schlecht", sondern ggf. nur "suboptimal".
+##Discussion
+##Test          Testen, was da passiert
+##Advanced      Fortgeschrittene Dinge
+
+
+*** Reihenfolge meines Reviews
+=> Kommentare in der Reihenfolge dieser Klassen lesen:
+- pom
+- JobScheduler
+- JobController
+- Job
+- Execution
+- ExecutionController
+- JobApplication
+- JobRepository
+- ExecutionRepository
+- ExecutionNotFoundException
+- JobNotFoundException
+- CorsConfiguration
+- application.properties
+- JobApplicationTest
+
+
+*** Package Structure
+So sollten die Klassen in Packages sortiert werden:
+
+web (controller)
+	JobController
+service
+	JobScheduler (JobService)
+dao
+	ExecutionRepository
+	JobRepository
+domain
+	Job
+domain/util
+    JobNotFoundException, ExecutionNotFoundException  (darauf sollte man aber ganz verzichten, siehe Kommentare dort)
+
+
+*** Fragen
+- Erzeugt Spring die Tabellenstruktur in der DB? => Würde ich gerne mal sehen...
