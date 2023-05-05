@@ -14,14 +14,20 @@ import jakarta.persistence.*;
 
 
 @Entity
+// Konvention: Tabellen-Namen schreibt man wie den Klassen-Namen groß: Job
 @Table(name = "job")
 public class Job {
 
     @Id
+    // ##Top: @GeneratedValue
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // Einfach nur id nennen, in der DB und in Java
     @Column(name = "job_id")
+    // Ist Long (statt long) hier erforderlich wegen @GeneratedValue? Wenn nicht, dann long verwenden
+    // ##Discussion: Java primitives vs. corresponding classes
     private Long job_id;
 
+    // ##Top: Java Validation: wo hast du denn das gelernt?? Wie/wo wird das angezeigt, wenn nicht erfüllt?
     @NotBlank(message = "Name is required")
     @Size(max = 50, message = "Name must be at most 50 characters")
     private String name;
@@ -30,18 +36,27 @@ public class Job {
     @Size(max = 200, message = "Description must be at most 200 characters")
     private String description;
 
+    // ##Bad: Java Konvention: camelCase verwenden: jobScript, startDate, endDate, etc.
+    // Gilt dann natürlich auch für alle getter und setter
+    // Ich würde das hier auch nicht jobScript nennen, sondern command.
+    // Auch NICHT jobCommand, denn es ist ja schon im Job-Objekt
     private String job_script;
     private Boolean status;
+    // S.o.: camelCase
     private LocalDateTime start_date;
     private LocalDateTime end_date;
     private String cronExpression;
 
 
+    // Die Lazy-Thematik hast du ja selbst schon erkannt :) Siehe Anmerkungen in Execution.
     @JsonIgnore
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL)
+    // Keine Zuweisung = new ArrayList<>(); machen. Sollte null sein, wenn nix da.
     private List<Execution> history = new ArrayList<>();
 
 
+    // Brauchst du diesen Konstruktor wirklich? Ich glaube, du rufst überall die setter auf, was in diesem Fall auch schöner ist:
+    // Lange Parameter-Listen sind beim Aufruf schwer zuzuordnen
     public Job(long job_id, String name, String description, String job_script, boolean status, LocalDateTime start_date,
                LocalDateTime end_date, String cronExpression) {
         this.job_id = job_id;
@@ -52,6 +67,9 @@ public class Job {
         this.start_date = start_date;
         this.end_date = end_date;
         this.cronExpression = cronExpression;
+
+        // Das brauchst du nicht, weil du es ja bei der Deklaration schon setzt.
+        // Du solltest es weder hier noch bei der Deklaration setzen.
         this.history = new ArrayList<>();
     }
 
@@ -99,6 +117,10 @@ public class Job {
         this.description = description;
     }
 
+    // Entweder die Methode so benennen, dass unmittelbar klar ist, was sie bedeutet <- das ist die beste Option ;)
+    // Oder einen JavaDoc-Kommentar dazuschreiben, der erklärt, wozu sie gut ist.
+    // Ich vermute, hier geht es um die Frage, ob der Job enabled/disabled ist?
+    // => dann wäre isEnabled() ein guter Name ;)
     public boolean isStatus() {
         return status;
     }
@@ -132,7 +154,9 @@ public class Job {
     }
 
     @Override
+    // ##Top: toString()-Methode vorhanden :)
     public String toString() {
+        // ##Top: sehr gutes Ausageformat, verwenden wir auch so. Bist du da selbst draufgekommen, oder hast du das von uns kopiert?
         return "Job{" +
                 "jid=" + job_id +
                 ", name='" + name + '\'' +

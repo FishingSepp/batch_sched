@@ -5,25 +5,40 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+// Konvention: Tabellen-Namen schreibt man wie den Klassen-Namen groß: Execution
+// Wieso hast du hier ein eigenes Schema jobapi??
 @Table(name = "execution", schema  = "jobapi")
 public class Execution {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // Wie bei Job: die id-Spalte sollte einfach nur id heißen
     @Column(name = "execution_id")
+    // id statt execution_id
     private Long execution_id;
 
+    // Das sollte dann jobId heißen
     @Column(name = "job_id", insertable = false, updatable = false)
+    // CamelCase: jobId
     private Long job_id;
 
     private Boolean success;
+    // CamelCase: exitCode
     private Integer exit_code;
     private String output;
 
+    //CamelCase
     private LocalDateTime start_time;
     private LocalDateTime end_time;
 
     //FetchType.LAZY could be better? but running into errors with it
+    // ##Top: WAHNSINN: Ich kann nicht glauben, dass du noch nie Java programmiert hast!?? Das ist nun wirklich fortgeschritten :))
+    // Wenn du hier job referenzierst, brauchst du oben job_id nicht.
+    // Und zu deiner Frage bzgl. LAZY: ja, wäre schöner, ABER:
+    // https://stackoverflow.com/questions/29373147/jpa-hibernate-lazy-many-to-one-fetch-proxy
+    // https://www.baeldung.com/hibernate-lazy-eager-loading
+    // ##TEST: Da sind wir dann bei SEHR fortgeschrittenen Themen: Proxy-Objekt, Hibernate Session, etc.
+    // Habe ich schon gesagt, dass ich nicht glauben kann, dass das dein erstes JPA-Programm ist??
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "job_id", referencedColumnName = "job_id")
     private Job job;
@@ -105,6 +120,7 @@ public class Execution {
     }
 
     @Override
+    // ##Top: suoer, wie bei Job :)
     public String toString() {
         return "Execution{" +
                 "eid=" + execution_id +
