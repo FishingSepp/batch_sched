@@ -1,4 +1,4 @@
-package com.example.job;
+package com.example.job.domain;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

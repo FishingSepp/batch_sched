@@ -1,5 +1,6 @@
-package com.example.job;
+package com.example.job.dao;
 
+import com.example.job.domain.Job;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

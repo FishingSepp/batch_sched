@@ -1,5 +1,8 @@
-package com.example.job;
+package com.example.job.controller;
 
+import com.example.job.domain.Job;
+import com.example.job.dao.JobRepository;
+import com.example.job.service.JobService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -15,17 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/job")
 public class JobController {
 
-    private static final Logger log = LoggerFactory.getLogger(JobScheduler.class);
+    private static final Logger log = LoggerFactory.getLogger(JobService.class);
 
     //final because immutable, nullsafe, test-friendly
     //since Spring4.3 dependencies are autowired automatically if it's a single constructor
     //spring team itself recommends constructor injection to be able to use final
     private final JobRepository jobRepository;
-    private final JobScheduler jobScheduler;
+    private final JobService jobService;
 
-    public JobController(JobRepository jobRepository, JobScheduler jobScheduler ) {
+    public JobController(JobRepository jobRepository, JobService jobService) {
         this.jobRepository = jobRepository;
-        this.jobScheduler = jobScheduler;
+        this.jobService = jobService;
     }
 
     @GetMapping
@@ -81,9 +84,15 @@ public class JobController {
             @ApiResponse(code = 200, message = "Job updated successfully"),
             @ApiResponse(code = 404, message = "Resource not found")
     })
-    public ResponseEntity<Job> updateJob(@PathVariable("jid") long jid, @Validated @RequestBody Job job) {
-        Job existingJob = jobRepository.findById(jid)
-                .orElseThrow(() -> new JobNotFoundException("updateJob(): finding job: id=" + jid));
+    public ResponseEntity<?> updateJob(@PathVariable("jid") long jid, @Validated @RequestBody Job job) {
+        Optional<Job> existingJobOptional = jobRepository.findById(jid);
+
+        if (!existingJobOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("updateJob(): No job found with id: " + jid);
+        }
+
+        Job existingJob = existingJobOptional.get();
         existingJob.setName(job.getName());
         existingJob.setDescription(job.getDescription());
         existingJob.setCommand(job.getCommand());
@@ -92,10 +101,10 @@ public class JobController {
         existingJob.setStartDate(job.getStartDate());
         existingJob.setEndDate(job.getEndDate());
         Job updatedJob = jobRepository.save(existingJob);
-        //System.out.println("Editing job with Id "+jid+"...");
         log.trace("updateJob(): updating job: id="+jid);
         return new ResponseEntity<>(updatedJob, HttpStatus.OK);
     }
+
 
     //hibernate would need to be configured for dirty checking to only write the status field then
     //still keeping this for understandability etc.?
@@ -106,16 +115,19 @@ public class JobController {
             @ApiResponse(code = 200, message = "Job status updated successfully"),
             @ApiResponse(code = 404, message = "Resource not found")
     })
-    public ResponseEntity<Job> updateJobStatus(@PathVariable("jid") long jid, @RequestBody Boolean newStatus) {
-        //either custom: Job existingJob = jobRepository.findById(jid)
-        //                .orElseThrow(() -> new JobNotFoundException("Job not found with id: " + jid));
-        //or new RuntimeException (but would give misleading 500 internal server error
-        //or response entity with 404 that misses detailed info
-        Job existingJob = jobRepository.findById(jid)
-                .orElseThrow(() -> new JobNotFoundException("updateStatusJob(): finding job: id=" + jid));
+    public ResponseEntity<?> updateJobStatus(@PathVariable("jid") long jid, @RequestBody Boolean newStatus) {
+        //new RuntimeException (but would give misleading 500 internal server error
+        //or response entity with 404 with more info
+        Optional<Job> existingJobOptional = jobRepository.findById(jid);
+
+        if (!existingJobOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("updateJobStatus(): No job found with id: " + jid);
+        }
+
+        Job existingJob = existingJobOptional.get();
         existingJob.setStatus(newStatus);
         Job updatedJob = jobRepository.save(existingJob);
-        //System.out.println("Editing status of job with Id "+jid+"...");
         log.trace("updateJobStatus(): updating status of job: id="+jid);
         return new ResponseEntity<>(updatedJob, HttpStatus.OK);
     }
@@ -126,11 +138,15 @@ public class JobController {
             @ApiResponse(code = 204, message = "Job deleted successfully"),
             @ApiResponse(code = 404, message = "Job not found")
     })
-    public ResponseEntity<Void> deleteJob(@PathVariable("jid") long jid) {
-        Job job = jobRepository.findById(jid)
-                .orElseThrow(() -> new JobNotFoundException("deleteJob(): finding job: id=" + jid));
-        jobRepository.delete(job);
-        //System.out.println("Deleting job with Id "+jid+"...");
+    public ResponseEntity<String> deleteJob(@PathVariable("jid") long jid) {
+        Optional<Job> jobOptional = jobRepository.findById(jid);
+
+        if (!jobOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("deleteJob(): No job found with id: " + jid);
+        }
+
+        jobRepository.delete(jobOptional.get());
         log.trace("deleteJob(): deleting job: id="+jid);
         return ResponseEntity.noContent().build();
     }
@@ -141,10 +157,9 @@ public class JobController {
             @ApiResponse(code = 200, message = "Job executed successfully"),
             @ApiResponse(code = 404, message = "Job not found")
     })
-    public ResponseEntity<Execution> executeJob(@PathVariable long jid) {
+    public ResponseEntity<?> executeJob(@PathVariable long jid) {
         try {
-            Execution execution = jobScheduler.executeJob(jid);
-            return new ResponseEntity<>(execution, HttpStatus.OK);
+            return jobService.executeJob(jid);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

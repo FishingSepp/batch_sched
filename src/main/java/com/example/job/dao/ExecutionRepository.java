@@ -1,5 +1,6 @@
-package com.example.job;
+package com.example.job.dao;
 
+import com.example.job.domain.Execution;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;

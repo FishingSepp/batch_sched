@@ -1,4 +1,4 @@
-package com.example.job;
+package com.example.job.domain;
 
 import jakarta.persistence.*;
 
