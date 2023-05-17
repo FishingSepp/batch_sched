@@ -2,7 +2,6 @@ package com.example.job;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import io.swagger.annotations.*;
 import java.util.ArrayList;
@@ -15,14 +14,15 @@ import java.util.Collections;
 @RequestMapping("/execution")
 public class ExecutionController {
 
-    private final ExecutionRepository executionRepository;
-    private final JobRepository jobRepository;
+    private ExecutionRepository executionRepository;
+    private JobRepository jobRepository;
 
     public ExecutionController(ExecutionRepository executionRepository, JobRepository jobRepository) {
         this.executionRepository = executionRepository;
         this.jobRepository = jobRepository;
     }
 
+    /*//not needed anymore?
     @Transactional
     @GetMapping
     @ApiOperation(value = "Get all executions", notes = "Retrieves all executions")
@@ -39,21 +39,21 @@ public class ExecutionController {
         for (Execution execution : executions) {
             Execution executionDTO = new Execution();
             executionDTO.setSuccess(execution.getSuccess());
-            executionDTO.setExit_code(execution.getExit_code());
+            executionDTO.setExitCode(execution.getExitCode());
             executionDTO.setOutput(execution.getOutput());
-            executionDTO.setJobId(execution.getJob().getJob_id()); // <-- include jid attribute
+            executionDTO.setJobId(execution.getJob().getId());
             executionDTOs.add(executionDTO);
         }
         System.out.println("Getting all executions...");
         return ResponseEntity.ok(executionDTOs);
-    }
+    }*/
 
     //took away 404 response as it would flood console for not-yet executed jobs
     @GetMapping("/{jid}")
     @ApiOperation(value = "Gets executions of a job by ID", notes = "Gets the executions of a job with the given ID")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Executions of job received successfully"),
-            @ApiResponse(code = 404, message = "Resource not found")
+            //@ApiResponse(code = 404, message = "Resource not found")
     })
     public ResponseEntity<List<Execution>> getExecutionsByJobId(@PathVariable Long jid) {
         List<Execution> executions = executionRepository.findByJobJid(jid);
@@ -62,6 +62,8 @@ public class ExecutionController {
             return ResponseEntity.ok(Collections.emptyList());
         }
         //System.out.println("Getting executions of job with Id "+jid+"...");
+        //return statement gives json format list and doesn't use the overwritten toString method
+        //when execution object is returned in response entity spring auto converts objects to json by using the getters to construct the json
         return ResponseEntity.ok(executions);
     }
 

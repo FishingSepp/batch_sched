@@ -15,11 +15,13 @@ public class CorsConfiguration {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
+                        //to deploy elsewhere uncomment the line below and comment the two lines below that
+                        //.allowedOrigins("*")
                         .allowedOrigins("http://localhost:3000")
+                        .allowCredentials(true)
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*")
                         .exposedHeaders("Authorization")
-                        .allowCredentials(true)
                         .maxAge(3600);
             }
         };

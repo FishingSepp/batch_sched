@@ -5,55 +5,47 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "execution", schema  = "jobapi")
+@Table(name = "execution")
 public class Execution {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "execution_id")
-    private Long execution_id;
-
-    @Column(name = "job_id", insertable = false, updatable = false)
-    private Long job_id;
+    @Column(name = "id")
+    private Long id;
 
     private Boolean success;
-    private Integer exit_code;
+    private Integer exitCode;
+
+    //default value would create the table with varchar255 might be too short for the output
+    @Column(name = "output", length = 10000)
     private String output;
 
-    private LocalDateTime start_time;
-    private LocalDateTime end_time;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
     //FetchType.LAZY could be better? but running into errors with it
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "job_id", referencedColumnName = "job_id")
+    @JoinColumn(name = "jobId", referencedColumnName = "id")
     private Job job;
 
     public Execution() {
     }
 
-    public Long getExecution_id() {
-        return execution_id;
+    public Long getId() {
+        return id;
     }
 
-    public void setExecution_id(Long eid) {
-        this.execution_id = eid;
+    public void setId(Long eid) {
+        this.id = eid;
     }
 
-    public Execution(boolean success, int exit_code, String output, LocalDateTime start_time, LocalDateTime end_time, Job job) {
+    public Execution(boolean success, int exitCode, String output, LocalDateTime startTime, LocalDateTime endTime, Job job) {
         this.success = success;
-        this.exit_code = exit_code;
+        this.exitCode = exitCode;
         this.output = output;
         this.job = job;
-        this.start_time = start_time;
-        this.end_time = end_time;
-    }
-
-    public Long getJobId() {
-        return job_id;
-    }
-
-    public void setJobId(Long job_id) {
-        this.job_id = job_id;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
     public void setJob(Job job) {
@@ -72,12 +64,12 @@ public class Execution {
         this.success = success;
     }
 
-    public int getExit_code() {
-        return exit_code;
+    public int getExitCode() {
+        return exitCode;
     }
 
-    public void setExit_code(int exit_code) {
-        this.exit_code = exit_code;
+    public void setExitCode(int exitCode) {
+        this.exitCode = exitCode;
     }
 
     public String getOutput() {
@@ -88,28 +80,28 @@ public class Execution {
         this.output = output;
     }
 
-    public LocalDateTime getStart_time() {
-        return start_time;
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
-    public void setStart_time(LocalDateTime start_time) {
-        this.start_time = start_time;
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
-    public LocalDateTime getEnd_time() {
-        return end_time;
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
-    public void setEnd_time(LocalDateTime end_time) {
-        this.end_time = end_time;
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     @Override
     public String toString() {
         return "Execution{" +
-                "eid=" + execution_id +
+                "id=" + id +
                 ", success=" + success +
-                ", exit_code=" + exit_code +
+                ", exitCode=" + exitCode +
                 ", output='" + output + '\'' +
                 ", job=" + job +
                 '}';

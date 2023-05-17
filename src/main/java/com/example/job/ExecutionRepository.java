@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface ExecutionRepository extends JpaRepository<Execution, Long> {
     @Transactional
-    @Query("SELECT e FROM Execution e WHERE e.job.job_id = :job_id")
-    List<Execution> findByJobJid(@Param("job_id") Long job_id);
+    @Query("SELECT e FROM Execution e WHERE e.job.id = :jobId")
+    List<Execution> findByJobJid(@Param("jobId") Long jobId);
 
 }
 

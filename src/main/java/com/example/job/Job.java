@@ -12,45 +12,59 @@ import jakarta.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-
+// lower case table names is configured by the msql server and will be auto changed to lower case
+// what is the norm here?
 @Entity
 @Table(name = "job")
 public class Job {
 
+    //Long to enable null for jobid, which is the case until the job is created
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "job_id")
-    private Long job_id;
+    @Column(name = "id")
+    private Long id;
 
+    // @size not needed here. used by hibernate validator and throws javax.validation.ConstraintViolationException
+    // but without making use of that and with restrictions in frontend its redundant here
+    // was a wrong approach that brought me here
+    @Column(length = 100)
+    @Size(max = 100, message = "Name must be at most 50 characters")
     @NotBlank(message = "Name is required")
-    @Size(max = 50, message = "Name must be at most 50 characters")
     private String name;
 
+    @Column(length = 1000)
+    @Size(max = 1000, message = "Description must be at most 200 characters")
     @NotBlank(message = "Name is required")
-    @Size(max = 200, message = "Description must be at most 200 characters")
     private String description;
 
-    private String job_script;
+    @Column(name = "command")
+    private String command;
     private Boolean status;
-    private LocalDateTime start_date;
-    private LocalDateTime end_date;
-    private String cronExpression;
 
+    @Column(name = "startDate")
+    private LocalDateTime startDate;
+
+    @Column(name = "endDate")
+    private LocalDateTime endDate;
+
+    @Column(name = "cronExpression")
+    private String cronExpression;
 
     @JsonIgnore
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL)
-    private List<Execution> history = new ArrayList<>();
+    private List<Execution> history;
 
-
-    public Job(long job_id, String name, String description, String job_script, boolean status, LocalDateTime start_date,
-               LocalDateTime end_date, String cronExpression) {
-        this.job_id = job_id;
+    //initiate history here, or having to check for null everytime and then initiate?
+    //won't stay empty usually, so initiated here
+    public Job(long id, String name, String description, String command, boolean status, LocalDateTime startDate,
+               LocalDateTime endDate, String cronExpression) {
+        this.id = id;
         this.name = name;
         this.description = description;
-        this.job_script = job_script;
+        this.command = command;
         this.status = status;
-        this.start_date = start_date;
-        this.end_date = end_date;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.cronExpression = cronExpression;
         this.history = new ArrayList<>();
     }
@@ -67,12 +81,12 @@ public class Job {
         this.cronExpression = cronExpression;
     }
 
-    public long getJob_id() {
-        return job_id;
+    public long getId() {
+        return id;
     }
 
-    public void setJob_id(long id) {
-        this.job_id = id;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -87,12 +101,12 @@ public class Job {
         return description;
     }
 
-    public String getJob_script() {
-        return job_script;
+    public String getCommand() {
+        return command;
     }
 
-    public void setJob_script(String job_script) {
-        this.job_script = job_script;
+    public void setCommand(String command) {
+        this.command = command;
     }
 
     public void setDescription(String description) {
@@ -107,20 +121,20 @@ public class Job {
         this.status = status;
     }
 
-    public LocalDateTime getStart_date() {
-        return start_date;
+    public LocalDateTime getStartDate() {
+        return startDate;
     }
 
-    public void setStart_date(LocalDateTime startDate) {
-        this.start_date = startDate;
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
     }
 
-    public LocalDateTime getEnd_date() {
-        return end_date;
+    public LocalDateTime getEndDate() {
+        return endDate;
     }
 
-    public void setEnd_date(LocalDateTime endDate) {
-        this.end_date = endDate;
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
     }
 
     public List<Execution> getHistory() {
@@ -134,12 +148,12 @@ public class Job {
     @Override
     public String toString() {
         return "Job{" +
-                "jid=" + job_id +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
-                ", startDate=" + start_date +
-                ", endDate=" + end_date +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
                 ", history=" + history +
                 '}';
     }
